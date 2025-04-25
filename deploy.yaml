@@ -181,3 +181,51 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "500m"
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+  namespace: default
+spec:
+  selfSigned: {}
+---
+#kubectl get secret vote-tls -o yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vote-cert
+  namespace: default
+spec:
+  secretName: vote-tls
+  issuerRef:
+    name: selfsigned-issuer
+    kind: Issuer
+  commonName: vote.votes.fr
+  dnsNames:
+  - vote.votes.fr
+  - results.votes.fr
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+  namespace: monitoring
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-cert
+  namespace: monitoring
+spec:
+  secretName: grafana-tls
+  issuerRef:
+    name: selfsigned-issuer
+    kind: Issuer
+  commonName: grafana.votes.fr
+  dnsNames:
+  - grafana.votes.fr
+#admin
+#prom-operator
